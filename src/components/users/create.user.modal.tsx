@@ -16,13 +16,14 @@ const CreateUserModal = (props: IProps) => {
   const [role, setRole] = useState("");
   const [address, setAddress] = useState("");
   const handleOk = async () => {
+    const data = { name, email, password, age, gender, role, address };
     const addNewUser = await fetch("http://localhost:8000/api/v1/users/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({}),
+      body: JSON.stringify({...data}),
     });
     const res = await addNewUser.json();
     if (res.data) {

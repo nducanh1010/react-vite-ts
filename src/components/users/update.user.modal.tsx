@@ -37,22 +37,32 @@ const UpdateUserModal = (props: IProps) => {
     }
   }, [dataUpdate]);
   const handleOk = async () => {
-    const addNewUser = await fetch("http://localhost:8000/api/v1/users/", {
-      method: "POST",
+    const data = {
+      _id: dataUpdate?._id,
+      name,
+      address,
+      email,
+      age,
+      gender,
+      role,
+    };
+    const updateUser = await fetch("http://localhost:8000/api/v1/users/", {
+      method: "PATCH",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({}),
+      body: JSON.stringify(data),
     });
-    const res = await addNewUser.json();
+    const res = await updateUser.json();
     if (res.data) {
       // truong hop co data tra ve
       await getData();
       notification.success({
-        message: "Tạo mới user thành công",
+        message: "Cap nhat user thành công",
       });
       setIsUpdateModalOpen(false);
+      handleCloseUpdateModal();
     } else {
       notification.error({
         message: "có lỗi xảy ra",
@@ -99,6 +109,7 @@ const UpdateUserModal = (props: IProps) => {
           <label> Password:</label>
 
           <Input
+            disabled={true}
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />

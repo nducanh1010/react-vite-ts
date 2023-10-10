@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
 import "../../styles/users.css";
-import { Button, Input, Modal, Table, notification } from "antd";
+import {
+  Button,
+  Input,
+  Modal,
+  Popconfirm,
+  Table,
+  message,
+  notification,
+} from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 
 import { ColumnsType } from "antd/es/table";
 import CreateUserModal from "./create.user.modal";
 import UpdateUserModal from "./update.user.modal";
+import { error } from "console";
 export interface IUser {
   _id: string;
   name: string;
@@ -49,6 +58,8 @@ const UsersTable = () => {
     setDataUpdate(userRows);
     setIsModalUpdateUserOpen(true);
   };
+  const handleDeleteUser = async (userRows: IUser) => {};
+
   const getUserTableData = async () => {
     const resp = await fetch("http://localhost:8000/api/v1/users/all", {
       headers: {
@@ -57,7 +68,33 @@ const UsersTable = () => {
       },
     });
     const usersData = await resp.json();
-    setListUsers(usersData.data.result);
+    if (!usersData.data) {
+      notification.error({
+        message: JSON.stringify(usersData.message),
+      });
+    }
+    await setListUsers(usersData.data.result);
+  };
+  const confirm = async (userRows: IUser) => {
+    const deleteUser = await fetch(
+      `http://localhost:8000/api/v1/users/${userRows._id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const res = await deleteUser.json();
+    if (res.data) {
+      message.success("Xoas User thành công");
+      await getUserTableData();
+    } else {
+      notification.error({
+        message: JSON.stringify(res.message),
+      });
+    }
   };
   const columnTable: ColumnsType<IUser> = [
     {
@@ -72,7 +109,26 @@ const UsersTable = () => {
     {
       title: "Actions",
       render: (value, record) => {
-        return <Button onClick={() => handleUpdateUser(record)}>Edit </Button>;
+        return (
+          <>
+            <Button onClick={() => handleUpdateUser(record)}>Edit </Button>
+            <Popconfirm
+              title="Delete the user"
+              description="Are you sure to delete this task?"
+              onConfirm={() => confirm(record)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button
+                style={{ marginLeft: "10px" }}
+                danger
+                onClick={() => handleDeleteUser(record)}
+              >
+                Delete{" "}
+              </Button>
+            </Popconfirm>
+          </>
+        );
       },
     },
   ];
