@@ -2,19 +2,19 @@ import { Modal, Input, notification } from "antd";
 import { useEffect, useState } from "react";
 import { IUser } from "./users.table";
 interface IProps {
-  token: string;
   getData: any;
   isUpdateModalOpen: boolean;
   setIsUpdateModalOpen: (v: boolean) => void;
   dataUpdate: null | IUser;
   setDataUpdate: any;
+  access_token: string;
 }
 const UpdateUserModal = (props: IProps) => {
   const {
     getData,
     isUpdateModalOpen,
     setIsUpdateModalOpen,
-    token,
+    access_token,
     dataUpdate,
     setDataUpdate,
   } = props;
@@ -50,7 +50,7 @@ const UpdateUserModal = (props: IProps) => {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${access_token}`,
       },
       body: JSON.stringify(data),
     });

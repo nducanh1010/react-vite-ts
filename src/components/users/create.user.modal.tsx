@@ -1,13 +1,14 @@
 import { Modal, Input, notification } from "antd";
 import { useState } from "react";
 interface IProps {
-  token: string;
+  access_token: string;
   getData: any;
   isCreateModalOpen: boolean;
   setIsCreateModalOpen: (v: boolean) => void;
 }
 const CreateUserModal = (props: IProps) => {
-  const { getData, isCreateModalOpen, setIsCreateModalOpen, token } = props;
+  const { getData, isCreateModalOpen, setIsCreateModalOpen, access_token } =
+    props;
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,9 +22,9 @@ const CreateUserModal = (props: IProps) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${access_token}`,
       },
-      body: JSON.stringify({...data}),
+      body: JSON.stringify({ ...data }),
     });
     const res = await addNewUser.json();
     if (res.data) {
