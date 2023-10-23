@@ -47,7 +47,6 @@ const UsersTable = () => {
     setDataUpdate(userRows);
     setIsModalUpdateUserOpen(true);
   };
-  const handleDeleteUser = async (userRows: IUser) => {};
 
   const getUserTableData = async () => {
     const resp = await fetch(
@@ -144,7 +143,6 @@ const UsersTable = () => {
               <Button
                 style={{ marginLeft: "10px" }}
                 danger
-                onClick={() => handleDeleteUser(record)}
               >
                 Delete{" "}
               </Button>

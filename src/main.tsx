@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { FireOutlined, UserOutlined } from "@ant-design/icons";
+import { FireOutlined, UserOutlined ,AudioOutlined } from "@ant-design/icons";
 import {
   createBrowserRouter,
   Link,
@@ -11,6 +11,7 @@ import {
 } from "react-router-dom";
 import UsersPage from "./screens/users.page.tsx";
 import { MenuProps, Menu } from "antd";
+import TracksPage from "./screens/tracks.page.tsx";
 const items: MenuProps["items"] = [
   {
     label: <Link to={"/"}>Home</Link>,
@@ -22,6 +23,12 @@ const items: MenuProps["items"] = [
     key: "user",
     icon: <UserOutlined />,
   },
+  {
+    label:<Link to={"/tracks"}>Manange tracks</Link>,
+    key:"tracks",
+    icon:<AudioOutlined />
+
+  }
 ];
 
 const Header = () => {
@@ -81,6 +88,8 @@ const router = createBrowserRouter([
         path: "users",
         element: <UsersPage />,
       },
+      {path:'tracks',
+    element:<TracksPage/>}
     ],
   },
 ]);

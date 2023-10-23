@@ -1,4 +1,12 @@
-import { Modal, Input, notification } from "antd";
+import {
+  Modal,
+  Input,
+  notification,
+  Form,
+  InputNumber,
+  Select,
+  Checkbox,
+} from "antd";
 import { useEffect, useState } from "react";
 import { IUser } from "./users.table";
 interface IProps {
@@ -18,131 +26,145 @@ const UpdateUserModal = (props: IProps) => {
     dataUpdate,
     setDataUpdate,
   } = props;
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [age, setAge] = useState(0);
-  const [gender, setGender] = useState("");
-  const [role, setRole] = useState("");
-  const [address, setAddress] = useState("");
+  const { Option } = Select;
+  const [form] = Form.useForm();
   useEffect(() => {
     if (dataUpdate) {
-      setAddress(dataUpdate.address);
-      setAge(dataUpdate.age);
-      setEmail(dataUpdate.email);
-      setGender(dataUpdate.gender);
-      setName(dataUpdate.name);
-      setPassword(dataUpdate.password);
-      setRole(dataUpdate.role);
+      form.setFieldsValue({
+        _id: dataUpdate._id,
+        name: dataUpdate.name,
+        email: dataUpdate.email,
+        password: dataUpdate.password,
+        age: dataUpdate.age,
+        gender: dataUpdate.gender,
+        role: dataUpdate.role,
+        address: dataUpdate.address,
+      });
     }
   }, [dataUpdate]);
-  const handleOk = async () => {
-    const data = {
-      _id: dataUpdate?._id,
-      name,
-      address,
-      email,
-      age,
-      gender,
-      role,
-    };
-    const updateUser = await fetch("http://localhost:8000/api/v1/users/", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${access_token}`,
-      },
-      body: JSON.stringify(data),
-    });
-    const res = await updateUser.json();
-    if (res.data) {
-      // truong hop co data tra ve
-      await getData();
-      notification.success({
-        message: "Cap nhat user thành công",
-      });
-      setIsUpdateModalOpen(false);
-      handleCloseUpdateModal();
-    } else {
-      notification.error({
-        message: "có lỗi xảy ra",
-        description: JSON.stringify(res.message),
-      });
-    }
-  };
   const handleCloseUpdateModal = () => {
-    setDataUpdate(null);
-    setAddress("");
-    setAge(0);
-    setEmail("");
-    setGender("");
-    setName("");
-    setPassword("");
-    setRole("");
+    form.resetFields();
     setIsUpdateModalOpen(false);
+    setDataUpdate(null);
+  };
+  const onFinish = async (values: any) => {
+    const { name, address, email, age, gender, role } = values;
+
+    if (dataUpdate) {
+      const data = {
+        _id: dataUpdate._id,
+        name,
+        address,
+        email,
+        age,
+        gender,
+        role,
+      };
+      const updateUser = await fetch("http://localhost:8000/api/v1/users/", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${access_token}`,
+        },
+        body: JSON.stringify(data),
+      });
+      const res = await updateUser.json();
+      if (res.data) {
+        // truong hop co data tra ve
+        await getData();
+        notification.success({
+          message: "Cap nhat user thành công",
+        });
+        setIsUpdateModalOpen(false);
+        handleCloseUpdateModal();
+      } else {
+        notification.error({
+          message: "có lỗi xảy ra",
+          description: JSON.stringify(res.message),
+        });
+      }
+    }
   };
   return (
     <>
       <Modal
         maskClosable={false}
-        title="Add new user"
+        title="Update new user"
         open={isUpdateModalOpen}
-        onOk={handleOk}
+        onOk={() => form.submit()}
         onCancel={handleCloseUpdateModal}
       >
-        <div>
-          <label> Name:</label>
-          <Input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-          />
-        </div>
-        <div>
-          <label> Email:</label>
-
-          <Input
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-          />
-        </div>
-        <div>
-          <label> Password:</label>
-
-          <Input
-            disabled={true}
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-        </div>
-        <div>
-          <label> Address:</label>
-
-          <Input
-            value={address}
-            onChange={(event) => setAddress(event.target.value)}
-          />
-        </div>
-        <div>
-          <label> Gender :</label>
-
-          <Input
-            value={gender}
-            onChange={(event) => setGender(event.target.value)}
-          />
-        </div>
-        <div>
-          <label> Age:</label>
-
-          <Input value={age} onChange={(event) => setAge(event.target.value)} />
-        </div>
-        <div>
-          <label> Role:</label>
-
-          <Input
-            value={role}
-            onChange={(event) => setRole(event.target.value)}
-          />
-        </div>
+        <Form
+          name="basic"
+          style={{ maxWidth: 600 }}
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          autoComplete="off"
+          layout="vertical"
+          form={form} // state của form, giống ref Vuejs
+        >
+          <Form.Item
+            label="Username"
+            name="name"
+            rules={[{ required: true, message: "Please input your username!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[{ required: true, message: "Please input your email !" }]}
+          >
+            <Input type="email" />
+          </Form.Item>
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[
+              {
+                required: dataUpdate ? false : true,
+                message: "Please input your password!",
+              },
+            ]}
+          >
+            <Input.Password disabled={dataUpdate ? true : false} />
+          </Form.Item>
+          <Form.Item
+            label="Age"
+            name="age"
+            style={{ width: "100%" }}
+            rules={[{ required: true, message: "Please input your age!" }]}
+          >
+            <InputNumber />
+          </Form.Item>
+          <Form.Item
+            label="Address"
+            name="address"
+            rules={[{ required: true, message: "Please input your address!" }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item label="Gender" name="gender" rules={[{ required: true }]}>
+            <Select placeholder="Select your gender" allowClear>
+              <Option value="MALE">male</Option>
+              <Option value="FEMALE">female</Option>
+              <Option value="OTHER">other</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Role" name="role" rules={[{ required: true }]}>
+            <Select placeholder="Select your Role" allowClear>
+              <Option value="USER">user</Option>
+              <Option value="ADMIN">admin</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="remember"
+            valuePropName="checked"
+            wrapperCol={{ offset: 8, span: 16 }}
+          >
+            <Checkbox>Remember me</Checkbox>
+          </Form.Item>
+        </Form>
       </Modal>
     </>
   );
