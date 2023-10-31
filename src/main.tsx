@@ -2,7 +2,12 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { FireOutlined, UserOutlined ,AudioOutlined } from "@ant-design/icons";
+import {
+  FireOutlined,
+  UserOutlined,
+  AudioOutlined,
+  BookOutlined,
+} from "@ant-design/icons";
 import {
   createBrowserRouter,
   Link,
@@ -12,6 +17,7 @@ import {
 import UsersPage from "./screens/users.page.tsx";
 import { MenuProps, Menu } from "antd";
 import TracksPage from "./screens/tracks.page.tsx";
+import CommentsPage from "./screens/comments.pages.tsx";
 const items: MenuProps["items"] = [
   {
     label: <Link to={"/"}>Home</Link>,
@@ -24,11 +30,15 @@ const items: MenuProps["items"] = [
     icon: <UserOutlined />,
   },
   {
-    label:<Link to={"/tracks"}>Manange tracks</Link>,
-    key:"tracks",
-    icon:<AudioOutlined />
-
-  }
+    label: <Link to={"/tracks"}>Manange tracks</Link>,
+    key: "tracks",
+    icon: <AudioOutlined />,
+  },
+  {
+    label: <Link to={"/comments"}>Manange comments</Link>,
+    key: "comments",
+    icon: <BookOutlined />,
+  },
 ];
 
 const Header = () => {
@@ -88,8 +98,8 @@ const router = createBrowserRouter([
         path: "users",
         element: <UsersPage />,
       },
-      {path:'tracks',
-    element:<TracksPage/>}
+      { path: "tracks", element: <TracksPage /> },
+      { path: "comments", element: <CommentsPage /> },
     ],
   },
 ]);
